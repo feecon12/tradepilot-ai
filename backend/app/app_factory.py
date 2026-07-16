@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.api.router import api_router
 from app.api.routes.instruments import router as instrument_router
-
+from app.api.routes import auth
 def create_app() -> FastAPI:
     app = FastAPI(
         title="TradePilot AI",
@@ -14,6 +14,7 @@ def create_app() -> FastAPI:
         instrument_router,
         prefix="/api/v1",
     )
+    app.include_router(auth.router)
 
     @app.get("/")
     async def health_check():
