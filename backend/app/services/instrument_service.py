@@ -1,9 +1,10 @@
 from app.models.instrument import Instrument
 from app.repositories.instrument_repository import InstrumentRepository
-from app.schemas.instrument import InstrumentCreate
+from app.schemas.instrument import InstrumentCreate, InstrumentUpdate
 from fastapi import HTTPException
 import math
 class InstrumentService:
+    
     def __init__(self, repository: InstrumentRepository):
         self.repository = repository
 
@@ -60,13 +61,29 @@ class InstrumentService:
             )
         self.repository.delete(instrument)
 
-    def get_paginated(self, page:int, size:int):
-        items, total = self.repository.get_paginated(page, size)
+    def get_paginated(
+        self, 
+        page:int, 
+        size:int,
+        search: str | None = None,
+        exchange: str | None = None,
+        instrument_type: str | None = None,
+        is_active: bool | None = None,
+    ):
+
+        items, total = self.repository.get_paginated(
+            page=page, 
+            size=size,
+            search=search,
+            exchange=exchange,
+            instrument_type=instrument_type,
+            is_active=is_active
+        )
 
         return {
             "items": items,
             "total": total,
             "page": page,
             "size": size,
-            "pages": math.ceil(total/size) if total else 0
+            "pages": math.ceil(total / size) if total else 0,
         }

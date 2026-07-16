@@ -1,8 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-
-from app.db.database import get_db
-from app.repositories.instrument_repository import InstrumentRepository
 from app.schemas.instrument import (
     InstrumentCreate,
     InstrumentResponse,
@@ -42,9 +38,20 @@ def create_instrument(
 def get_instruments(
     page: int=Query(1, ge=1),
     size: int=Query(10,ge=1, le=100),
+    search: str | None = None,
+    exchange: str | None = None,
+    instrument_type: str | None = None,
+    is_active: bool | None = None,
     service: InstrumentService = Depends(get_instrument_service),
 ): 
-    return service.get_paginated(page, size)
+    return service.get_paginated(
+        page=page,
+        size=size,
+        search=search,
+        exchange=exchange,
+        instrument_type=instrument_type,
+        is_active=is_active,
+    )
 
 @router.get(
     "/{instrument_id}",

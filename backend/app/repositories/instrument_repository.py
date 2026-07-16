@@ -37,11 +37,41 @@ class InstrumentRepository:
         self.db.delete(instrument)
         self.db.commit()
 
-    def get_paginated(self, page: int, size: int):
-        total = self.db.query(Instrument).count()
+    def get_paginated(
+            self, 
+            page: int, 
+            size: int, 
+            search: str | None =  None, 
+            exchange: str | None = None, 
+            instrument_type: str | None=None, 
+            is_active: bool | None=None
+        ):
+        query = self.db.query(Instrument)
+
+        if search:
+            query = query.filter(
+                Instrument.symbol.ilike(f"%{search}%")
+            )
+
+        if exchange:
+            query =  query.filter(
+                Instrument.exchange==exchange.upper()
+            )
+
+        if instrument_type:
+            query=query.filter(
+                Instrument.instrument_type==instrument_type.upper()
+            )
+        
+        if is_active is not None:
+            query=query.filter(
+                Instrument.is_active==is_active
+            )
+        
+        total = query.count()
 
         items = (
-            self.db.query(Instrument)
+            query
             .offset((page-1)*size)
             .limit(size)
             .all()
