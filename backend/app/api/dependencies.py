@@ -7,6 +7,8 @@ from app.services.instrument_service import InstrumentService
 from app.repositories.user_repository import UserRepository
 from app.services.user_service import UserService
 
+from app.services.auth_service import AuthService
+
 def get_instrument_service(
         db: Session = Depends(get_db),
 ) -> InstrumentService:
@@ -16,3 +18,9 @@ def get_instrument_service(
 def get_user_service(db: Session = Depends(get_db)):
     repository = UserRepository(db)
     return UserService(repository)
+
+def get_auth_service(
+        db: Session = Depends(get_db),
+):
+    repository=UserRepository(db)
+    return AuthService(repository)

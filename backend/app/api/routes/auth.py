@@ -4,6 +4,10 @@ from app.api.dependencies import get_user_service
 from app.schemas.user import UserCreate, UserResponse
 from app.services.user_service import UserService
 
+from app.schemas.auth import LoginRequest, TokenResponse
+from app.services.auth_service import AuthService
+from app.api.dependencies import get_auth_service
+
 router =  APIRouter(
     prefix="/auth",
     tags=["Authentication"],
@@ -24,3 +28,13 @@ def register(
             status_code=400,
             detail=str(e),
         )
+
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+)
+def login(
+    data: LoginRequest,
+    service: AuthService=Depends(get_auth_service),
+):
+    return service.login(data)
