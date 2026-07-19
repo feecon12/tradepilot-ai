@@ -3,13 +3,14 @@ from fastapi import HTTPException, status
 from app.core.security import create_access_token, verify_password
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import LoginRequest
+from fastapi.security import OAuth2PasswordRequestForm
 
 class AuthService:
     def __init__(self, repository:UserRepository):
         self.repository=repository
     
-    def login(self, data: LoginRequest):
-        user = self.repository.get_by_email(data.email)
+    def login(self, form_data: OAuth2PasswordRequestForm):
+        user = self.repository.get_by_email(form_data.username)
 
         if not user:
             raise HTTPException(
@@ -18,7 +19,7 @@ class AuthService:
             )
         
         if not verify_password(
-            data.password,
+            form_data.password,
             user.hashed_password
         ):
             raise HTTPException(

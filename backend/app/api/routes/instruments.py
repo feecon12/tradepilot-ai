@@ -9,6 +9,9 @@ from app.services.instrument_service import InstrumentService
 from fastapi  import status, Query
 from app.api.dependencies import get_instrument_service
 
+from app.api.auth import get_current_user
+from app.models.user import User
+
 router = APIRouter(
     prefix="/instruments",
     tags=["Instruments"],
@@ -20,6 +23,7 @@ router = APIRouter(
 )
 def create_instrument(
     data: InstrumentCreate,
+    current_user: User = Depends(get_current_user),
     service: InstrumentService=Depends(get_instrument_service),
 ):
     try:
@@ -42,6 +46,7 @@ def get_instruments(
     exchange: str | None = None,
     instrument_type: str | None = None,
     is_active: bool | None = None,
+    current_user: User = Depends(get_current_user),
     service: InstrumentService = Depends(get_instrument_service),
 ): 
     return service.get_paginated(
@@ -59,6 +64,7 @@ def get_instruments(
 )
 def get_instrument_by_id(
     instrument_id:int,
+    current_user: User = Depends(get_current_user),
     service: InstrumentService = Depends(get_instrument_service)  
 ):
     return service.get_by_id(instrument_id)
@@ -70,6 +76,7 @@ def get_instrument_by_id(
 def update_instrument(
     instrument_id: int,
     data:InstrumentUpdate,
+    current_user: User = Depends(get_current_user),
     service: InstrumentService = Depends(get_instrument_service)  
 
 
@@ -82,6 +89,7 @@ def update_instrument(
 )
 def delete_instrument(
     instrument_id: int,
+    current_user: User = Depends(get_current_user),
     service: InstrumentService = Depends(get_instrument_service)  
 
 ):

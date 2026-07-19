@@ -1,7 +1,7 @@
 from pwdlib import PasswordHash
 
 from datetime import datetime, timedelta, UTC
-from jose import jwt 
+from jose import jwt, JWTError
 from app.core.config import settings
 
 password_hash= PasswordHash.recommended()
@@ -26,3 +26,15 @@ def create_access_token(data:dict) -> str:
         settings.secret_key,
         algorithm=settings.algorithm,
     )
+
+def decode_access_token(token:str):
+    try:
+        payload=jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[settings.algorithm],
+        )
+        return payload
+    except JWTError:
+        return None
+    
