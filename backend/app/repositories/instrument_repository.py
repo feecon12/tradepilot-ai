@@ -11,13 +11,20 @@ class InstrumentRepository:
         self.db.refresh(instrument)
         return instrument
     
-    def get_all(self) -> list[Instrument]:
-        return self.db.query(Instrument).all()
-    
-    def get_by_id(self, instrument_id: int) -> Instrument | None:
+    def get_all(self, user_id: int):
         return (
             self.db.query(Instrument)
-            .filter(Instrument.id == instrument_id)
+            .filter(Instrument.user_id==user_id)
+            .all()
+        )
+    
+    def get_by_id(self, instrument_id: int, user_id:int) -> Instrument | None:
+        return (
+            self.db.query(Instrument)
+            .filter(
+                Instrument.id == instrument_id,
+                Instrument.user_id == user_id,    
+            )
             .first()
         )
     
@@ -39,14 +46,18 @@ class InstrumentRepository:
 
     def get_paginated(
             self, 
+            user_id:int,
             page: int, 
             size: int, 
             search: str | None =  None, 
             exchange: str | None = None, 
             instrument_type: str | None=None, 
-            is_active: bool | None=None
+            is_active: bool | None=None,
         ):
-        query = self.db.query(Instrument)
+        query = (
+            self.db.query(Instrument)
+            .filter(Instrument.user_id == user_id)
+        )
 
         if search:
             query = query.filter(

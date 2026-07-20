@@ -1,5 +1,5 @@
 
-from sqlalchemy.orm import  Mapped, mapped_column
+from sqlalchemy.orm import  Mapped, mapped_column, relationship
 from sqlalchemy import Boolean, String
 from app.db.base import Base
 
@@ -25,4 +25,9 @@ class User(Base):
     is_active: Mapped[bool]=mapped_column(
         Boolean,
         default=True
+    )
+
+    instruments: Mapped[list["Instrument"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
     )
