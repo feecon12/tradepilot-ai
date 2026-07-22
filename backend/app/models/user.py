@@ -31,3 +31,8 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan"
     )
+
+    watchlists: Mapped[list["Watchlist"]] = relationship(
+    back_populates="user",
+    cascade="all, delete-orphan",
+)

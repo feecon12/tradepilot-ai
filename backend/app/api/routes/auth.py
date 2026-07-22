@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.dependencies import get_user_service
-from app.schemas.user import UserCreate, UserResponse
+from app.api.dependencies import get_user_service, get_auth_service
+from app.schemas import UserCreate, UserResponse
 from app.services.user_service import UserService
+from app.services.auth_service import AuthService
 
 from app.schemas.auth import LoginRequest, TokenResponse
-from app.services.auth_service import AuthService
-from app.api.dependencies import get_auth_service
 
 from fastapi.security import OAuth2PasswordRequestForm
 

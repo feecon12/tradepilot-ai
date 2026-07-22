@@ -12,6 +12,9 @@ from app.services.user_service import UserService
 
 from app.services.auth_service import AuthService
 
+from app.repositories.watchlist_repository import WatchlistRepository
+from app.services.watchlist_service import WatchlistService
+
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/login"
 )
@@ -63,3 +66,11 @@ def get_auth_service(
 ):
     repository=UserRepository(db)
     return AuthService(repository)
+
+def get_watchlist_service(
+    db: Session = Depends(get_db),
+) -> WatchlistService:
+
+    repository = WatchlistRepository(db)
+
+    return WatchlistService(repository)

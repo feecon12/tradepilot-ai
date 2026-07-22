@@ -35,3 +35,8 @@ class Instrument(Base):
     user: Mapped["User"] = relationship(
         back_populates="instruments",
     )
+
+    watchlist_items: Mapped[list["WatchlistItem"]] = relationship(
+    back_populates="instrument",
+    cascade="all, delete-orphan",
+)

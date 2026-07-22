@@ -2,14 +2,12 @@ import math
 
 from fastapi import HTTPException
 
-from app.models.instrument import Instrument
-from app.models.user import User
-from app.repositories.instrument_repository import InstrumentRepository
-from app.schemas.instrument import (
+from app.models import User, Instrument
+from app.repositories import InstrumentRepository
+from app.schemas import (
     InstrumentCreate,
     InstrumentUpdate,
 )
-
 
 class InstrumentService:
 
@@ -36,31 +34,60 @@ class InstrumentService:
 
         return self.repository.create(instrument)
 
+    def get_by_id(
+            self,
+            current_user: User,
+            instrument_id: int,
+        ):
+    
+            instrument = self.repository.get_by_id(
+                instrument_id,
+                current_user.id,
+            )
+    
+            if not instrument:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Instrument not found",
+                )
+    
+            return instrument
+
     def get_all(
         self,
         current_user: User,
     ):
         return self.repository.get_all(current_user.id)
 
-    def get_by_id(
-        self,
-        current_user: User,
-        instrument_id: int,
-    ):
-
-        instrument = self.repository.get_by_id(
-            instrument_id,
-            current_user.id,
-        )
-
-        if not instrument:
-            raise HTTPException(
-                status_code=404,
-                detail="Instrument not found",
+    def get_paginated(
+            self,
+            current_user: User,
+            page: int,
+            size: int,
+            search: str | None = None,
+            exchange: str | None = None,
+            instrument_type: str | None = None,
+            is_active: bool | None = None,
+        ):
+    
+            items, total = self.repository.get_paginated(
+                user_id=current_user.id,
+                page=page,
+                size=size,
+                search=search,
+                exchange=exchange,
+                instrument_type=instrument_type,
+                is_active=is_active,
             )
-
-        return instrument
-
+    
+            return {
+                "items": items,
+                "total": total,
+                "page": page,
+                "size": size,
+                "pages": math.ceil(total / size) if total else 0,
+            }
+    
     def update(
         self,
         current_user: User,
@@ -103,32 +130,3 @@ class InstrumentService:
             )
 
         self.repository.delete(instrument)
-
-    def get_paginated(
-        self,
-        current_user: User,
-        page: int,
-        size: int,
-        search: str | None = None,
-        exchange: str | None = None,
-        instrument_type: str | None = None,
-        is_active: bool | None = None,
-    ):
-
-        items, total = self.repository.get_paginated(
-            user_id=current_user.id,
-            page=page,
-            size=size,
-            search=search,
-            exchange=exchange,
-            instrument_type=instrument_type,
-            is_active=is_active,
-        )
-
-        return {
-            "items": items,
-            "total": total,
-            "page": page,
-            "size": size,
-            "pages": math.ceil(total / size) if total else 0,
-        }

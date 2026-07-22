@@ -10,31 +10,76 @@ class InstrumentRepository:
         self.db.commit()
         self.db.refresh(instrument)
         return instrument
-    
+
+    def get_by_id(self, instrument_id: int, user_id:int) -> Instrument | None:
+            return (
+                self.db.query(Instrument)
+                .filter(
+                    Instrument.id == instrument_id,
+                    Instrument.user_id == user_id,    
+                )
+                .first()
+            )  
+
+    def get_by_symbol(self, symbol:str) -> Instrument | None:
+            return (
+                self.db.query(Instrument)
+                .filter(Instrument.symbol == symbol)
+                .first()
+            )
+
     def get_all(self, user_id: int):
         return (
             self.db.query(Instrument)
             .filter(Instrument.user_id==user_id)
             .all()
         )
-    
-    def get_by_id(self, instrument_id: int, user_id:int) -> Instrument | None:
-        return (
-            self.db.query(Instrument)
-            .filter(
-                Instrument.id == instrument_id,
-                Instrument.user_id == user_id,    
+
+    def get_paginated(
+                self, 
+                user_id:int,
+                page: int, 
+                size: int, 
+                search: str | None =  None, 
+                exchange: str | None = None, 
+                instrument_type: str | None=None, 
+                is_active: bool | None=None,
+            ):
+            query = (
+                self.db.query(Instrument)
+                .filter(Instrument.user_id == user_id)
             )
-            .first()
-        )
     
-    def get_by_symbol(self, symbol:str) -> Instrument | None:
-        return (
-            self.db.query(Instrument)
-            .filter(Instrument.symbol == symbol)
-            .first()
-        )
+            if search:
+                query = query.filter(
+                    Instrument.symbol.ilike(f"%{search}%")
+                )
     
+            if exchange:
+                query =  query.filter(
+                    Instrument.exchange==exchange.upper()
+                )
+    
+            if instrument_type:
+                query=query.filter(
+                    Instrument.instrument_type==instrument_type.upper()
+                )
+            
+            if is_active is not None:
+                query=query.filter(
+                    Instrument.is_active==is_active
+                )
+            
+            total = query.count()
+    
+            items = (
+                query
+                .offset((page-1)*size)
+                .limit(size)
+                .all()
+            )
+            return items, total
+      
     def update(self, instrument: Instrument) -> Instrument:
         self.db.commit()
         self.db.refresh(instrument)
@@ -44,47 +89,4 @@ class InstrumentRepository:
         self.db.delete(instrument)
         self.db.commit()
 
-    def get_paginated(
-            self, 
-            user_id:int,
-            page: int, 
-            size: int, 
-            search: str | None =  None, 
-            exchange: str | None = None, 
-            instrument_type: str | None=None, 
-            is_active: bool | None=None,
-        ):
-        query = (
-            self.db.query(Instrument)
-            .filter(Instrument.user_id == user_id)
-        )
-
-        if search:
-            query = query.filter(
-                Instrument.symbol.ilike(f"%{search}%")
-            )
-
-        if exchange:
-            query =  query.filter(
-                Instrument.exchange==exchange.upper()
-            )
-
-        if instrument_type:
-            query=query.filter(
-                Instrument.instrument_type==instrument_type.upper()
-            )
-        
-        if is_active is not None:
-            query=query.filter(
-                Instrument.is_active==is_active
-            )
-        
-        total = query.count()
-
-        items = (
-            query
-            .offset((page-1)*size)
-            .limit(size)
-            .all()
-        )
-        return items, total
+    
