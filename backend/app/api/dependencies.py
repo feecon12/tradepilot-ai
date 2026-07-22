@@ -15,6 +15,9 @@ from app.services.auth_service import AuthService
 from app.repositories.watchlist_repository import WatchlistRepository
 from app.services.watchlist_service import WatchlistService
 
+from app.repositories import PortfolioRepository
+from app.services import PortfolioService
+
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/login"
 )
@@ -74,3 +77,11 @@ def get_watchlist_service(
     repository = WatchlistRepository(db)
 
     return WatchlistService(repository)
+
+def get_portfolio_service(
+    db: Session = Depends(get_db),
+) -> PortfolioService:
+
+    repository = PortfolioRepository(db)
+
+    return PortfolioService(repository)

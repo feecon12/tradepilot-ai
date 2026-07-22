@@ -35,4 +35,9 @@ class User(Base):
     watchlists: Mapped[list["Watchlist"]] = relationship(
     back_populates="user",
     cascade="all, delete-orphan",
-)
+    )
+
+    portfolios: Mapped[list["Portfolio"]] = relationship(
+    back_populates="user",
+    cascade="all, delete-orphan",
+    )

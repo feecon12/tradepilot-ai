@@ -1,3 +1,4 @@
 from .instrument_repository import InstrumentRepository
 from .user_repository import UserRepository
 from .watchlist_repository import WatchlistRepository
+from .portfolio_repository import PortfolioRepository

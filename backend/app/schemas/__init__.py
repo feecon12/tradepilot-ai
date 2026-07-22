@@ -21,3 +21,10 @@ from .auth import (
     LoginRequest,
     TokenResponse,
 )
+
+from .portfolio import (
+    PortfolioCreate,
+    PortfolioUpdate,
+    PortfolioResponse,
+    PortfolioListResponse,
+)
