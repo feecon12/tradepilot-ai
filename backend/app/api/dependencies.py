@@ -18,6 +18,14 @@ from app.services.watchlist_service import WatchlistService
 from app.repositories import PortfolioRepository
 from app.services import PortfolioService
 
+from app.repositories.holding_repository import HoldingRepository
+from app.services.holding_service import HoldingService
+
+from app.repositories.transaction_repository import TransactionRepository
+from app.repositories.holding_repository import HoldingRepository
+
+from app.services.transaction_service import TransactionService
+
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/login"
 )
@@ -85,3 +93,21 @@ def get_portfolio_service(
     repository = PortfolioRepository(db)
 
     return PortfolioService(repository)
+
+def get_holding_service(
+    db: Session = Depends(get_db),
+) -> HoldingService:
+    repository = HoldingRepository(db)
+    return HoldingService(repository)
+
+def get_transaction_service(
+    db: Session = Depends(get_db),
+) -> TransactionService:
+
+    transaction_repository = TransactionRepository(db)
+    holding_repository = HoldingRepository(db)
+
+    return TransactionService(
+        transaction_repository,
+        holding_repository,
+    )

@@ -39,4 +39,14 @@ class Instrument(Base):
     watchlist_items: Mapped[list["WatchlistItem"]] = relationship(
     back_populates="instrument",
     cascade="all, delete-orphan",
-)
+    )
+
+    holdings: Mapped[list["Holding"]] = relationship(
+    back_populates="instrument",
+    cascade="all, delete-orphan",
+    )
+
+    transactions: Mapped[list["Transaction"]] = relationship(
+    back_populates="instrument",
+    cascade="all, delete-orphan",
+    )

@@ -11,11 +11,14 @@ class User(Base):
     username: Mapped[str]= mapped_column(
         String(50),
         unique=True,
+        nullable=False,
         index=True,
     )
 
-    email: Mapped[str]= mapped_column(
-        String(50)
+    email: Mapped[str] = mapped_column(
+        String(100),
+        unique=True,
+        index=True,
     )
 
     hashed_password: Mapped[str]=mapped_column(
